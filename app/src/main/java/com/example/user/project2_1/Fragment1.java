@@ -28,6 +28,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -47,6 +48,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -147,12 +149,9 @@ public class Fragment1 extends Fragment {
                 Intent intent = new Intent(getActivity().getApplicationContext(),itemclickevent.class);
 
                 Bitmap bitmap;
-                if(!data.get("photo").equals("Nop")) {
-                    bitmap = queryContactImage(Integer.parseInt(data.get("photo")));
-                }
-                else
-                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.kakao);
 
+
+                bitmap = StringToBitmap(data.get("photo"));
                 bitmap = resizingBitmap(bitmap);
                 bitmap = getRoundedBitmap(bitmap, 60);
                 intent.putExtra("photo", bitmap);
@@ -433,9 +432,9 @@ public class Fragment1 extends Fragment {
         String number = "Phone Number";
         String email ="Email";
         //int photoId = 555;
-        String photo ="Nop";
         HashMap<String, String> contact = new HashMap<>();
-        //Bitmap bitmap =  BitmapFactory.decodeResource(getResources(), R.drawable.kakao);
+        Bitmap bitmap =  BitmapFactory.decodeResource(getResources(), R.drawable.kakao);
+        String photo;
 
         if (c != null) {
             if (c.moveToFirst()) {
@@ -445,11 +444,11 @@ public class Fragment1 extends Fragment {
 
                 int photoId = c.getInt(3);
 
-              // if(photoId != 0)
-                //    bitmap = queryContactImage(photoId);
+               if(photoId != 0)
+                    bitmap = queryContactImage(photoId);
 
-                if(photoId != 0)
-                    photo = Integer.toString(photoId);
+                //if(photoId != 0)
+                 //   photo = Integer.toString(photoId);
 
 
                 Cursor emails = contentResolver.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
@@ -475,7 +474,7 @@ public class Fragment1 extends Fragment {
         //bitmap = convertRoundedBitmap(bitmap);
 
 
-
+        photo = BitmapToString(bitmap);
         //photo = getStringFromBitmap(bitmap);
        // Log.i("bitmap",photo);
         contact.put("pid",pid);
@@ -493,6 +492,37 @@ public class Fragment1 extends Fragment {
 
 
     //////////아래로는 비트맵
+
+    public static String BitmapToString (Bitmap bitmap){
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+            byte[] b = baos.toByteArray();
+            String temp = Base64.encodeToString(b, Base64.DEFAULT);
+            return temp;
+        } catch (NullPointerException e) {
+            return null;
+        } catch (OutOfMemoryError e) {
+            return null;
+        }
+    }
+
+
+    public static Bitmap StringToBitmap (String encodedString){
+        try {
+            byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            return bitmap;
+        } catch (NullPointerException e) {
+            e.getMessage();
+            return null;
+        } catch (OutOfMemoryError e) {
+            return null;
+        }
+    }
+
+
+
 
     private Bitmap queryContactImage(int imageDataRow) {
 

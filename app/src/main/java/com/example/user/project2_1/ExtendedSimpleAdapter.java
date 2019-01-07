@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -116,33 +117,30 @@ public class ExtendedSimpleAdapter extends SimpleAdapter{
 
                             Bitmap bitmap;
 
-                            if(!data.equals("Nop"))
+                            String string = (String)data;
+                            if(string.length() > 100)
                             {
 
                                // bitmap = StringToBitMap((String)data);
 
-                                int idata = Integer.parseInt((String)data);
-                                Bitmap bitmap2 = queryContactImage((idata));
-                                //bitmap = queryContactImage((idata));
-                                //
-                                bitmap = getRoundedBitmap(bitmap2, 71);
-                                //bitmap = convertRoundedBitmap(bitmap);
+                                bitmap = StringToBitmap(string);
 
+                                //bitmap = convertRoundedBitmap(bitmap);
+                                bitmap = resizingBitmap(bitmap);
+                                bitmap = getRoundedBitmap(bitmap, 60);
 
                                 setViewImage((ImageView) v, bitmap);
                                 // setViewImage((ImageView) v, text);
                             }
                             else
                             {
-                                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.kakao);
+                                setViewImage((ImageView) v, text);
                             }
 
-                                bitmap = resizingBitmap(bitmap);
 
-                                bitmap = getRoundedBitmap(bitmap, 60);
                                 //bitmap = convertRoundedBitmap(bitmap);
 
-                                setViewImage((ImageView) v, bitmap);
+
 
                             }
 
@@ -157,16 +155,21 @@ public class ExtendedSimpleAdapter extends SimpleAdapter{
     }
 
 
-    public Bitmap StringToBitMap(String encodedString){
-        try{
-            byte [] encodeByte=Base64.decode(encodedString,Base64.DEFAULT);
-            Bitmap bitmap=BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+    public static Bitmap StringToBitmap (String encodedString){
+        try {
+            byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
             return bitmap;
-        }catch(Exception e){
+        } catch (NullPointerException e) {
             e.getMessage();
+            return null;
+        } catch (OutOfMemoryError e) {
             return null;
         }
     }
+
+
+
 
     private Bitmap queryContactImage(int imageDataRow) {
 

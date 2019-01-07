@@ -360,7 +360,6 @@ public class Fragment2 extends Fragment {
                 Log.i("result", String.valueOf(resultCode));
                 if (resultCode == Activity.RESULT_OK) {
 
-
                     // 멀티 선택을 지원하지 않는 기기에서는 getClipdata()가 없음 => getData()로 접근해야 함
                     if (data.getClipData() == null) {
                         Log.i("1. single choice", String.valueOf(data.getData()));
@@ -536,6 +535,8 @@ public class Fragment2 extends Fragment {
                 //loadContacts();
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
                 for(int i=0; i<btmstring.size();i++){
 
                     //JSONObject를 만들고 key value 형식으로 값을 저장해준다.
@@ -611,13 +612,14 @@ public class Fragment2 extends Fragment {
                         }
                     }
 
+
                 }
 
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
+            btmstring.clear();
 
             /////////////////////////////////////////////////
 
